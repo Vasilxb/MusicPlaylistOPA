@@ -22,48 +22,89 @@ import java.util.List;
 @Controller
 @RequestMapping("/music-playlists")
 public class MusicPlaylistController {
+
     private final MusicPlaylistService musicPlaylistService;
     private final SongService songService;
 
-    public MusicPlaylistController(MusicPlaylistService musicPlaylistService, SongService songService) {
+    public MusicPlaylistController(
+            MusicPlaylistService musicPlaylistService,
+            SongService songService
+    ) {
         this.musicPlaylistService = musicPlaylistService;
         this.songService = songService;
     }
 
     @GetMapping
-    public String showMusicPlaylists(@RequestParam(value = "musicPlaylistName", required = false) String musicPlaylistName, Model model) {
+    public String showMusicPlaylists(
+            @RequestParam(
+                    value = "musicPlaylistName",
+                    required = false
+            ) String musicPlaylistName,
+            Model model
+    ) {
+
         List<MusicPlaylist> musicPlaylists;
-        if (musicPlaylistName == null || musicPlaylistName.isBlank()) {
-            musicPlaylists = musicPlaylistService.listMusicPlaylists();
+
+        if (musicPlaylistName == null ||
+                musicPlaylistName.isBlank()) {
+
+            musicPlaylists =
+                    musicPlaylistService.listMusicPlaylists();
+
         } else {
-            musicPlaylists = musicPlaylistService.findMusicPlaylistByName(musicPlaylistName);
+
+            musicPlaylists =
+                    musicPlaylistService.findMusicPlaylistByName(
+                            musicPlaylistName
+                    );
         }
+
         model.addAttribute("musicPlaylists", musicPlaylists);
         model.addAttribute("songs", songService.listSongs());
         model.addAttribute("musicPlaylistName", musicPlaylistName);
+
         return "musicPlaylists";
     }
 
     @GetMapping("/create")
     public String showCreateMusicPlaylistForm(Model model) {
-        model.addAttribute("songs", songService.listSongs());
+
+        model.addAttribute(
+                "songs",
+                songService.listSongs()
+        );
+
         return "createMusicPlaylist";
     }
 
     @GetMapping("/{id}/edit")
-    public String showEditMusicPlaylistForm(@PathVariable("id") String id, Model model) {
-        MusicPlaylist playlist = musicPlaylistService.findMusicPlaylistById(new MusicPlaylistId(id));
+    public String showEditMusicPlaylistForm(
+            @PathVariable("id") String id,
+            Model model
+    ) {
+
+        MusicPlaylist playlist =
+                musicPlaylistService.findMusicPlaylistById(
+                        new MusicPlaylistId(id)
+                );
+
         model.addAttribute("playlist", playlist);
         model.addAttribute("songs", songService.listSongs());
+
         return "editMusicPlaylist";
     }
 
     @PostMapping("/{id}/update")
-    public String updateMusicPlaylist(@PathVariable("id") String id,
-                                    @RequestParam String playlistName,
-                                    @RequestParam String description,
-                                    @RequestParam String userId,
-                                    @RequestParam String songId) {
+    public String updateMusicPlaylist(
+            @PathVariable("id") String id,
+            @RequestParam String playlistName,
+            @RequestParam String description,
+            @RequestParam String songId,
+            Authentication authentication
+    ) {
+
+        String userId = authentication.getName();
+
         musicPlaylistService.updateMusicPlaylist(
                 new MusicPlaylistId(id),
                 new PlaylistName(playlistName),
@@ -71,37 +112,72 @@ public class MusicPlaylistController {
                 userId,
                 new SongId(songId)
         );
+
         return "redirect:/music-playlists";
     }
 
     @PostMapping("/save")
-    public String saveMusicPlaylist(@RequestParam String playlistName,
-                                   @RequestParam String description,
-                                   @RequestParam String songId,
-                                   Authentication authentication,
-                                   Model model) {
+    public String saveMusicPlaylist(
+            @RequestParam String playlistName,
+            @RequestParam String description,
+            @RequestParam String songId,
+            Authentication authentication,
+            Model model
+    ) {
+
         String userId = authentication.getName();
+
         try {
+
             musicPlaylistService.createMusicPlaylist(
                     new PlaylistName(playlistName),
                     new Description(description),
                     userId,
                     new SongId(songId)
             );
+
             return "redirect:/music-playlists";
-        } catch (IllegalArgumentException | DataIntegrityViolationException ex) {
+
+        } catch (
+                IllegalArgumentException |
+                DataIntegrityViolationException ex
+        ) {
+
             model.addAttribute("error", ex.getMessage());
-            model.addAttribute("songs", songService.listSongs());
-            model.addAttribute("playlistName", playlistName);
-            model.addAttribute("description", description);
-            model.addAttribute("songId", songId);
+            model.addAttribute(
+                    "songs",
+                    songService.listSongs()
+            );
+            model.addAttribute(
+                    "playlistName",
+                    playlistName
+            );
+            model.addAttribute(
+                    "description",
+                    description
+            );
+            model.addAttribute(
+                    "songId",
+                    songId
+            );
+
             return "createMusicPlaylist";
         }
     }
 
     @PostMapping("/{id}/delete")
-    public String deleteMusicPlaylist(@PathVariable("id") String id) {
-        musicPlaylistService.deleteMusicPlaylist(new MusicPlaylistId(id));
+    public String deleteMusicPlaylist(
+            @PathVariable("id") String id,
+            Authentication authentication
+    ) {
+
+        String userId = authentication.getName();
+
+        musicPlaylistService.deleteMusicPlaylist(
+                new MusicPlaylistId(id),
+                userId
+        );
+
         return "redirect:/music-playlists";
     }
 }

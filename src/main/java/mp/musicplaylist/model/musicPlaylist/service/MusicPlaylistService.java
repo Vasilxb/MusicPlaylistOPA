@@ -12,8 +12,8 @@ import java.util.List;
 @Service
 public interface MusicPlaylistService {
     MusicPlaylist createMusicPlaylist(PlaylistName playlistName, Description description, String userId, SongId songId);
-    MusicPlaylist updateMusicPlaylist(MusicPlaylistId musicPlaylistId, PlaylistName playlistName, Description description, String userId, SongId songId);
-    void deleteMusicPlaylist(MusicPlaylistId musicPlaylistId);
+    MusicPlaylist updateMusicPlaylist(MusicPlaylistId musicPlaylistId, PlaylistName playlistName, Description description,String userId, SongId songId);
+    void deleteMusicPlaylist(MusicPlaylistId musicPlaylistId, String userId);
     MusicPlaylist findMusicPlaylistById(MusicPlaylistId musicPlaylistId);
     List<MusicPlaylist> findMusicPlaylistByName(String musicPlaylistName);
     List<MusicPlaylist> listMusicPlaylists();
