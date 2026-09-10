@@ -7,6 +7,7 @@ import mp.musicplaylist.model.song.ids.SongId;
 import mp.musicplaylist.model.song.service.SongService;
 import mp.musicplaylist.model.song.valueObjects.Album;
 import mp.musicplaylist.model.song.valueObjects.Artist;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,9 +50,19 @@ public class SongController {
     public String saveSong(@RequestParam String title,
                            @RequestParam String artist,
                            @RequestParam String album,
-                           @RequestParam String year) {
-        songService.createSong(new Title(title), new Artist(artist), new Album(album), new Year(year));
-        return "redirect:/songs";
+                           @RequestParam String year,
+                           Model model) {
+        try {
+            songService.createSong(new Title(title), new Artist(artist), new Album(album), new Year(year));
+            return "redirect:/songs";
+        } catch (IllegalArgumentException | DataIntegrityViolationException ex) {
+            model.addAttribute("error", ex.getMessage());
+            model.addAttribute("title", title);
+            model.addAttribute("artist", artist);
+            model.addAttribute("album", album);
+            model.addAttribute("year", year);
+            return "createSong";
+        }
     }
 
     @PostMapping("/{id}/update")

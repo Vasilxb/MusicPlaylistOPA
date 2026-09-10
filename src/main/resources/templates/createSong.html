@@ -21,26 +21,27 @@
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4">
                     <h2 class="mb-4">Add Song</h2>
+                    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
                     <form method="post" th:action="@{/songs/save}">
                         <div class="mb-3">
                             <label for="title" class="form-label">Title</label>
-                            <input id="title" name="title" type="text" class="form-control" required>
+                            <input id="title" name="title" type="text" class="form-control" required th:value="${title}">
                         </div>
 
                         <div class="mb-3">
                             <label for="artist" class="form-label">Artist</label>
-                            <input id="artist" name="artist" type="text" class="form-control" required>
+                            <input id="artist" name="artist" type="text" class="form-control" required th:value="${artist}">
                         </div>
 
                         <div class="mb-3">
                             <label for="album" class="form-label">Album</label>
-                            <input id="album" name="album" type="text" class="form-control" required>
+                            <input id="album" name="album" type="text" class="form-control" required th:value="${album}">
                         </div>
 
                         <div class="mb-4">
                             <label for="year" class="form-label">Year</label>
-                            <input id="year" name="year" type="text" class="form-control" maxlength="4" pattern="\\d{4}" required>
+                            <input id="year" name="year" type="text" class="form-control" maxlength="4" pattern="[0-9]{4}" required th:value="${year}">
                         </div>
 
                         <div class="d-flex justify-content-between">

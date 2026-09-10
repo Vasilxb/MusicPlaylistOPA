@@ -7,6 +7,8 @@ import mp.musicplaylist.model.musicPlaylist.service.MusicPlaylistService;
 import mp.musicplaylist.model.musicPlaylist.valueObjects.PlaylistName;
 import mp.musicplaylist.model.song.ids.SongId;
 import mp.musicplaylist.model.song.service.SongService;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -75,15 +77,26 @@ public class MusicPlaylistController {
     @PostMapping("/save")
     public String saveMusicPlaylist(@RequestParam String playlistName,
                                    @RequestParam String description,
-                                   @RequestParam String userId,
-                                   @RequestParam String songId) {
-        musicPlaylistService.createMusicPlaylist(
-                new PlaylistName(playlistName),
-                new Description(description),
-                userId,
-                new SongId(songId)
-        );
-        return "redirect:/music-playlists";
+                                   @RequestParam String songId,
+                                   Authentication authentication,
+                                   Model model) {
+        String userId = authentication.getName();
+        try {
+            musicPlaylistService.createMusicPlaylist(
+                    new PlaylistName(playlistName),
+                    new Description(description),
+                    userId,
+                    new SongId(songId)
+            );
+            return "redirect:/music-playlists";
+        } catch (IllegalArgumentException | DataIntegrityViolationException ex) {
+            model.addAttribute("error", ex.getMessage());
+            model.addAttribute("songs", songService.listSongs());
+            model.addAttribute("playlistName", playlistName);
+            model.addAttribute("description", description);
+            model.addAttribute("songId", songId);
+            return "createMusicPlaylist";
+        }
     }
 
     @PostMapping("/{id}/delete")

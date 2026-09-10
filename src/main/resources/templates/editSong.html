@@ -43,7 +43,7 @@
 
                         <div class="mb-4">
                             <label for="year" class="form-label">Year</label>
-                            <input id="year" name="year" type="text" class="form-control" maxlength="4" pattern="\\d{4}"
+                            <input id="year" name="year" type="text" class="form-control" maxlength="4" pattern="[0-9]{4}"
                                    th:value="${song.Year().value()}" required>
                         </div>
 

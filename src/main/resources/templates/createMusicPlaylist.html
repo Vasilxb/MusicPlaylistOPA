@@ -18,21 +18,17 @@
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4 p-lg-5">
                     <h2 class="mb-4">Create Playlist</h2>
+                    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
                     <form method="post" th:action="@{/music-playlists/save}">
                         <div class="mb-3">
                             <label for="playlistName" class="form-label">Playlist name</label>
-                            <input id="playlistName" name="playlistName" type="text" class="form-control" required>
+                            <input id="playlistName" name="playlistName" type="text" class="form-control" required th:value="${playlistName}">
                         </div>
 
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <textarea id="description" name="description" class="form-control" rows="3" required></textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="userId" class="form-label">User ID</label>
-                            <input id="userId" name="userId" type="text" class="form-control" required>
+                            <textarea id="description" name="description" class="form-control" rows="3" required th:text="${description}"></textarea>
                         </div>
 
                         <div class="mb-4">
@@ -41,6 +37,7 @@
                                 <option value="" selected disabled>Select a song</option>
                                 <option th:each="song : ${songs}"
                                         th:value="${song.getId()}"
+                                        th:selected="${songId != null and songId == song.getId().toString()}"
                                         th:text="${song.Title().value() + ' - ' + song.Artist().value()}">
                                     Song
                                 </option>
